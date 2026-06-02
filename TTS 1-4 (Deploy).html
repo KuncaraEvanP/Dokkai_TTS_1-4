@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nihongo Dokkai & TTS Interaktif</title>
+    <!-- Google Fonts & Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        jp: ['Noto Sans JP', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Smooth Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans transition-colors duration-300 min-h-screen flex flex-col">
+
+    <!-- -->
+    <!-- HEADER BAR -->
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 dark:bg-indigo-500 text-white p-2.5 rounded-xl shadow-md shadow-indigo-500/20">
+                    <i class="fa-solid fa-square-poll-horizontal text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-400 dark:to-violet-400 bg-clip-text text-transparent">Nihongo Dokkai & TTS</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Aplikasi Belajar Mandiri Bahasa Jepang</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <!-- Sound Toggle Button -->
+                <button id="sound-toggle" class="p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-all border border-slate-200 dark:border-slate-700" title="Aktifkan/Matikan Suara">
+                    <i id="sound-icon" class="fa-solid fa-volume-high text-lg"></i>
+                </button>
+                <!-- Dark Mode Toggle Button -->
+                <button id="theme-toggle" class="p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-all border border-slate-200 dark:border-slate-700" title="Ubah Tema">
+                    <i id="theme-icon" class="fa-solid fa-moon text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- -->
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col lg:flex-row gap-6">
+        
+        <!-- COLUMN 1: DOKKAI & QUIZZES -->
+        <section class="w-full lg:w-1/2 flex flex-col gap-6">
+            
+            <!-- Tab Navigation for Column 1 -->
+            <div class="bg-white dark:bg-slate-800 p-1.5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 flex">
+                <button id="tab-dokkai" class="flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 bg-indigo-600 text-white shadow-md shadow-indigo-600/10">
+                    <i class="fa-solid fa-book-open"></i> Teks Dokkai
+                </button>
+                <button id="tab-kuis" class="flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50">
+                    <i class="fa-solid fa-circle-question"></i> Kuis Evaluasi
+                </button>
+            </div>
+
+            <!-- -->
+            <!-- DOKKAI PANEL -->
+            <div id="dokkai-panel" class="space-y-4">
+                <!-- Header Info -->
+                <div class="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 rounded-2xl p-4">
+                    <h2 class="text-indigo-800 dark:text-indigo-300 font-bold text-sm mb-1">
+                        <i class="fa-solid fa-circle-info mr-1"></i> Cara Belajar Efektif:
+                    </h2>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                        Bacalah teks dokkai di bawah ini dengan saksama. Kata-kata yang dicetak tebal atau berwarna adalah petunjuk utama untuk mengisi kotak-kotak TTS di panel kanan. Gunakan tombol kuis untuk melatih pemahaman Anda.
+                    </p>
+                </div>
+
+                <!-- Dokkai Text Accordions -->
+                <div class="space-y-3" id="dokkai-container">
+                    <!-- Dokkai 1 -->
+                    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-2xl overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md">
+                        <button onclick="toggleAccordion('d1')" class="w-full px-5 py-4 flex items-center justify-between text-left font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700/20">
+                            <span class="flex items-center gap-2.5">
+                                <span class="bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-400 text-xs px-2.5 py-1 rounded-md font-extrabold">01</span>
+                                <span>Dokkai 1: Email dari John untuk Takeshi</span>
+                            </span>
+                            <i id="arrow-d1" class="fa-solid fa-chevron-down transition-transform duration-300 text-slate-400"></i>
+                        </button>
+                        <div id="content-d1" class="hidden border-t border-slate-150 dark:border-slate-700/50 p-5 space-y-4">
+                            <div class="font-jp text-base sm:text-lg leading-loose tracking-wide bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                                （じょんさんはたけしくんの中学校で<strong class="text-indigo-600 dark:text-indigo-400">英語（えいご / EIGO）</strong>を教えていました。つぎのぶんはじょうんさんからたけしくんへのメ－ルです。）<br>
+                                たけしくん<br>
+                                メ－ル、ありがとう。前のメ－ルに「英語の勉強はつまらない」と書いてありましたが。まず好きなことから始めたらどうですか。<br>
+                                ぼくが日本語の勉強を始めたのは中学１年のときです。友だちの家ではじめて日本の<strong class="text-indigo-600 dark:text-indigo-400">まんが（MANGA）</strong>を見ました。そのときは日本語がぜんぜんわからなかったのですが、えがあるから話はだいたいわかりました。日本語で読めるようになりたいと思って、自分で勉強を始めました。かんじは、むずかしかったですが、まんがを何さつも読んでいたら、かんたんなかんじはおぼえていました。<br>
+                                まんがはよくないと言う人もいますが、どんなものにもいいものと悪いものがあると思います。だから、まんがもえらんで読めばいいと思います。人をいじめるようなまんがはよくないですが、サッカ－やバスケットボ－ルなど<strong class="text-indigo-600 dark:text-indigo-400">スポ－ツ（SUPOOTSU）</strong>のまんがはおもしろいし、読むと元気になります。
+                            </div>
+                            <button onclick="toggleTranslation('tr1')" class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 font-semibold">
+                                <i class="fa-solid fa-language"></i> <span id="label-tr1">Tampilkan Terjemahan</span>
+                            </button>
+                            <p id="tr1" class="hidden text-xs text-slate-500 dark:text-slate-400 leading-relaxed bg-indigo-50/50 dark:bg-indigo-950/20 p-3.5 rounded-lg border border-indigo-100/40 dark:border-indigo-900/30">
+                                (John mengajar bahasa Inggris di SMP Takeshi. Tulisan berikut adalah email dari John untuk Takeshi.)<br>
+                                Takeshi-kun, terima kasih emailnya. Di email sebelumnya kamu menulis "belajar bahasa Inggris itu membosankan". Bagaimana jika memulainya dari hal yang kamu sukai dulu?<br>
+                                Saya mulai belajar bahasa Jepang saat kelas 1 SMP. Saya pertama kali melihat komik Jepang di rumah teman saya. Waktu itu saya sama sekali tidak mengerti bahasa Jepang, tetapi karena ada gambarnya, saya bisa memahami jalan ceritanya secara garis besar. Saya ingin bisa membacanya dalam bahasa Jepang, jadi saya mulai belajar sendiri. Huruf Kanji memang sulit, tetapi setelah membaca banyak komik, saya jadi hafal kanji-kanji yang mudah.<br>
+                                Ada orang yang bilang komik itu tidak baik, tetapi saya rasa dalam hal apapun pasti ada sisi baik dan buruknya. Oleh karena itu, saya pikir kita sebaiknya memilih komik yang bagus untuk dibaca. Komik yang merundung orang lain itu tidak baik, tetapi komik olahraga seperti sepak bola atau basket itu sangat menarik dan membuat kita bersemangat saat membacanya.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Dokkai 2 -->
+                    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-2xl overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md">
+                        <button onclick="toggleAccordion('d2')" class="w-full px-5 py-4 flex items-center justify-between text-left font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700/20">
+                            <span class="flex items-center gap-2.5">
+                                <span class="bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-400 text-xs px-2.5 py-1 rounded-md font-extrabold">02</span>
+                                <span>Dokkai 2: Ketentuan Penggunaan Ruang Rapat</span>
+                            </span>
+                            <i id="arrow-d2" class="fa-solid fa-chevron-down transition-transform duration-300 text-slate-400"></i>
+                        </button>
+                        <div id="content-d2" class="hidden border-t border-slate-150 dark:border-slate-700/50 p-5 space-y-4">
+                            <div class="font-jp text-base sm:text-lg leading-loose tracking-wide bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                                <strong class="text-indigo-600 dark:text-indigo-400">かいぎ室（かいぎしつ / KAIGISHITSU）</strong>を利用する人へ<br>
+                                このビルには、三つの大きさのかいぎ室があります。<br>
+                                <strong>大かいぎ室：</strong> ５かいに一つあります。100人入れます。<br>
+                                【よやくのしかた】 ３か月前から１週間前までよやくできます。ここを使いたいときは、よやくの紙に使う日や時間を書いて、じむしょに出してください。よやくの紙はじむしょでもらえます。毎月１日になると、その月のよやくを書いたカレンダーがじむしょの前にはられます。<br>
+                                <strong>中かいぎ室：</strong> ６かいに一つあります。50人入れます。<br>
+                                【よやくのしかた】 ２か月前から前の日までよやくできます。毎月１日に、このかいぎ室の前に２か月後の大きい<strong class="text-indigo-600 dark:text-indigo-400">カレンダー（KARENDAR）</strong>をはります。たとえば、３月１日には５月のカレンダーをはります。使いたい日の使いたい時間のところに名前を書いてください。<br>
+                                <strong>小かいぎ室：</strong> ２かいから４かいまで一つずつあります。一つのかいぎ室に20人入れます。<br>
+                                【よやくのしかた】 １週間からよやくできます。利用する日でもよやくできます。使いたいときはじむしょの人に言ってください。
+                            </div>
+                            <button onclick="toggleTranslation('tr2')" class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 font-semibold">
+                                <i class="fa-solid fa-language"></i> <span id="label-tr2">Tampilkan Terjemahan</span>
+                            </button>
+                            <p id="tr2" class="hidden text-xs text-slate-500 dark:text-slate-400 leading-relaxed bg-indigo-50/50 dark:bg-indigo-950/20 p-3.5 rounded-lg border border-indigo-100/40 dark:border-indigo-900/30">
+                                Kepada Pengguna Ruang Rapat:<br>
+                                Di gedung ini terdapat tiga ukuran ruang rapat.<br>
+                                - Ruang Rapat Besar: Ada 1 di lantai 5. Kapasitas 100 orang. [Cara Reservasi] Dapat dipesan dari 3 bulan sebelum hingga 1 minggu sebelum hari penggunaan. Tulis tanggal dan waktu di formulir reservasi yang didapat di kantor administrasi, lalu kumpulkan. Setiap tanggal 1, kalender berisi reservasi bulan itu akan ditempel di depan kantor.<br>
+                                - Ruang Rapat Menengah: Ada 1 di lantai 6. Kapasitas 50 orang. [Cara Reservasi] Dapat dipesan dari 2 bulan sebelum hingga hari sebelumnya. Setiap tanggal 1, kalender besar untuk reservasi 2 bulan ke depan ditempel di depan ruang rapat tersebut. Contoh, di tanggal 1 Maret akan ditempel kalender bulan Mei. Silakan tulis nama Anda pada jam dan tanggal yang diinginkan.<br>
+                                - Ruang Rapat Kecil: Ada 1 di tiap lantai dari lantai 2 s/d 4. Kapasitas 20 orang. [Cara Reservasi] Dapat dipesan dari 1 minggu sebelum atau bahkan pada hari-H penggunaan. Silakan bilang langsung kepada petugas di kantor administrasi jika ingin menggunakan.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Dokkai 3 -->
+                    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-2xl overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md">
+                        <button onclick="toggleAccordion('d3')" class="w-full px-5 py-4 flex items-center justify-between text-left font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700/20">
+                            <span class="flex items-center gap-2.5">
+                                <span class="bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-400 text-xs px-2.5 py-1 rounded-md font-extrabold">03</span>
+                                <span>Dokkai 3: Apartemen Ramah Hewan & Keluarga Hanada</span>
+                            </span>
+                            <i id="arrow-d3" class="fa-solid fa-chevron-down transition-transform duration-300 text-slate-400"></i>
+                        </button>
+                        <div id="content-d3" class="hidden border-t border-slate-150 dark:border-slate-700/50 p-5 space-y-4">
+                            <div class="font-jp text-base sm:text-lg leading-loose tracking-wide bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                                さいきん犬やねこなどの<strong class="text-indigo-600 dark:text-indigo-400">ペット（PETTO）</strong>といっしょに住めるアパ－トがふえてきています。10年前、この町にはペットと住めるアパ－トがほとんどありませんでしたが、去年はぜんぜんのアパ－トの半分以上になりました。そして、今もふえつづけているそうです。<br>
+                                先月花田さんとおくさんがこの町のアパ－トにひっこしてきました。ひっこしてから、<strong class="text-indigo-600 dark:text-indigo-400">犬（いぬ / INU）</strong>2ひきといっしょに住んでいます。花田さんは65さいで仕事を　やめてから元気がありませんでしたが、犬といっしょにいて気持ちが明るくなったそうです。おくさんは体がじょうぶになりました。ひっこす前は足が悪くて、ほとんど家の中にいましたが、今は毎日犬といっしょに<strong class="text-indigo-600 dark:text-indigo-400">さんぽ（SANPO）</strong>しています。二人は、いやなことがあっても、かわいい2ひきを見ると気持ちがやさしくなって、毎日楽しくせいかつできると言っています。<br>
+                                わたしは今までペットがほしいと思ったことが　ありませんでした。ペットは毎日世話がたいへんです。食べ物やトイレの世話があるし、病気のときは病院につれて行かなければなりません。でも、花田さんの話を聞いて、わたしもペットと住んでみたいと思いました。
+                            </div>
+                            <button onclick="toggleTranslation('tr3')" class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 font-semibold">
+                                <i class="fa-solid fa-language"></i> <span id="label-tr3">Tampilkan Terjemahan</span>
+                            </button>
+                            <p id="tr3" class="hidden text-xs text-slate-500 dark:text-slate-400 leading-relaxed bg-indigo-50/50 dark:bg-indigo-950/20 p-3.5 rounded-lg border border-indigo-100/40 dark:border-indigo-900/30">
+                                Akhir-akhir ini, apartemen tempat tinggal yang mengizinkan pemeliharaan hewan peliharaan seperti anjing dan kucing semakin meningkat. Sepuluh tahun yang lalu hampir tidak ada apartemen yang memperbolehkan hewan peliharaan di kota ini, namun tahun lalu jumlahnya melampaui setengah dari seluruh apartemen yang ada. Kabarnya tren ini terus meningkat.<br>
+                                Bulan lalu, Tuan Hanada dan istrinya pindah ke sebuah apartemen di kota ini. Sejak pindah, mereka tinggal bersama 2 ekor anjing. Tuan Hanada yang berusia 65 tahun sempat kehilangan gairah hidup setelah pensiun dari pekerjaannya, namun setelah tinggal bersama anjing-anjing itu ia terlihat menjadi lebih ceria. Kesehatan istrinya pun membaik. Sebelum pindah kakinya bermasalah sehingga hanya berdiam diri di dalam rumah, namun sekarang ia bisa berjalan-jalan (sanpo) setiap hari bersama anjingnya. Mereka berkata bahwa meskipun ada hal yang tidak menyenangkan terjadi, melihat kedua anjing yang lucu tersebut langsung membuat suasana hati kembali tenang dan hari-hari terasa menyenangkan.<br>
+                                Selama ini saya tidak pernah berpikiran untuk memelihara hewan. Merawat hewan peliharaan setiap hari sangat merepotkan. Harus memberi makan, membersihkan toilet, dan membawanya ke rumah sakit saat sakit. Tapi setelah mendengar kisah keluarga Hanada, saya jadi ingin tinggal bersama hewan peliharaan juga.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Dokkai 4 -->
+                    <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-2xl overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md">
+                        <button onclick="toggleAccordion('d4')" class="w-full px-5 py-4 flex items-center justify-between text-left font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700/20">
+                            <span class="flex items-center gap-2.5">
+                                <span class="bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-400 text-xs px-2.5 py-1 rounded-md font-extrabold">04</span>
+                                <span>Dokkai 4: Sudut Pandang tentang Cuaca Hujan</span>
+                            </span>
+                            <i id="arrow-d4" class="fa-solid fa-chevron-down transition-transform duration-300 text-slate-400"></i>
+                        </button>
+                        <div id="content-d4" class="hidden border-t border-slate-150 dark:border-slate-700/50 p-5 space-y-4">
+                            <div class="font-jp text-base sm:text-lg leading-loose tracking-wide bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
+                                日本では、<strong class="text-indigo-600 dark:text-indigo-400">雨（あめ / AME）</strong>がふる日は天気が悪い日と言う。どうして日本では雨がふる日だけ天気が悪いと言うのだろうか。<br>
+                                もちろん、雨がふるとかさをささなければならない。くつがよごれるし、かばんもぬれる。でも、わたしは雨の日が好きだ。雨の日は、木のみどりがうつくしく見える。雨がきたない空気を洗っているようで、はれの日よりきれいに見える。また、デパートや映画館は雨の日のほうがすいている。それに、わたしがいつも行くスーパーは雨の日のほうがねだんが安い。特に<strong class="text-indigo-600 dark:text-indigo-400">野菜（やさい / YASAI）</strong>やくだものはとても安くなるのでうれしい。<br>
+                                わたしは雨ではなく、<strong class="text-indigo-600 dark:text-indigo-400">風（かぜ / KAZE）</strong>が強いほうが天気が悪いと思う。風が強い日は、よく目にごみが入ってこまる。それに、家にすなが入ったり、せんたくものがとんだりして、たいへんだからだ。<br>
+                                雨がふると天気が悪いと言われるけれど、わたしは 天気がいいか悪いかは雨だけではきめられない と思う。みなさんはどう考えるだろうか。
+                            </div>
+                            <button onclick="toggleTranslation('tr4')" class="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 font-semibold">
+                                <i class="fa-solid fa-language"></i> <span id="label-tr4">Tampilkan Terjemahan</span>
+                            </button>
+                            <p id="tr4" class="hidden text-xs text-slate-500 dark:text-slate-400 leading-relaxed bg-indigo-50/50 dark:bg-indigo-950/20 p-3.5 rounded-lg border border-indigo-100/40 dark:border-indigo-900/30">
+                                Di Jepang, hari turunnya hujan sering disebut sebagai hari bercuaca buruk. Kenapa ya di Jepang hanya hari hujan saja yang disebut cuaca buruk?<br>
+                                Tentu saja saat hujan kita harus memakai payung, sepatu menjadi kotor, dan tas menjadi basah. Namun saya menyukai hari hujan. Saat hujan, warna hijau pepohonan terlihat sangat indah. Air hujan seolah mencuci udara yang kotor sehingga tampak lebih bersih dibanding hari cerah. Selain itu, toserba (department store) dan bioskop menjadi lebih sepi di hari hujan. Terlebih lagi, supermarket langganan saya menawarkan harga yang lebih murah di hari hujan. Khususnya sayuran (yasai) dan buah-buahan menjadi sangat murah, itu membuat saya senang.<br>
+                                Bagi saya, hari yang berangin (kaze) kencanglah yang merupakan cuaca buruk sebenarnya. Di hari berangin kencang, mata sering kemasukan debu dan itu sangat mengganggu. Ditambah lagi, pasir bisa masuk ke rumah dan jemuran baju bisa beterbangan, repot sekali.<br>
+                                Meskipun orang-orang menyebut hari hujan bercuaca buruk, menurut saya baik atau buruknya cuaca tidak bisa ditentukan hanya dari turunnya hujan saja. Bagaimana menurut pendapat Anda semua?
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- -->
+            <!-- QUIZ PANEL -->
+            <div id="quiz-panel" class="space-y-4 hidden">
+                <div class="bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 rounded-2xl p-4 flex gap-3 items-start">
+                    <span class="text-2xl">📝</span>
+                    <div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-200">Uji Pemahaman Dokkai</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Jawablah pertanyaan berikut berdasarkan teks bacaan untuk melatih ingatan dan pemahaman tata bahasa Jepang Anda.</p>
+                    </div>
+                </div>
+
+                <!-- Quiz Questions -->
+                <div class="space-y-4" id="quiz-list">
+                    <!-- Loaded dynamically via JavaScript to ensure pristine rendering -->
+                </div>
+            </div>
+
+        </section>
+
+        <!-- COLUMN 2: INTERACTIVE CANVAS CROSSWORD (TTS) -->
+        <section class="w-full lg:w-1/2 flex flex-col gap-5">
+            
+            <!-- TTS Card -->
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700/80 flex flex-col gap-4">
+                
+                <!-- Game Info Header -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="flex h-3 w-3 relative">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                        </span>
+                        <h2 class="font-extrabold text-lg text-slate-800 dark:text-slate-100">Crossword Grid</h2>
+                    </div>
+                    <!-- Action Toolbar -->
+                    <div class="flex gap-2">
+                        <button onclick="verifyCrossword()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-md shadow-indigo-600/20 flex items-center gap-1.5 transition-all">
+                            <i class="fa-solid fa-square-check"></i> Periksa
+                        </button>
+                        <button onclick="resetCrossword()" class="px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 rounded-lg text-xs font-extrabold transition-all" title="Ulang dari awal">
+                            <i class="fa-solid fa-rotate-right"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Canvas Container with Dynamic Fit -->
+                <div class="relative bg-slate-100 dark:bg-slate-900 rounded-2xl overflow-hidden p-3 border border-slate-200/60 dark:border-slate-800 flex justify-center items-center">
+                    <canvas id="tts-canvas" class="max-w-full touch-none cursor-pointer"></canvas>
+                </div>
+
+                <!-- Helper Quick Tip -->
+                <p class="text-[11px] text-slate-400 dark:text-slate-500 text-center -mt-1">
+                    💡 <span class="font-semibold">Navigasi:</span> Klik pada kotak aktif untuk menyeleksi. Klik ulang sel aktif untuk mengganti arah mengetik (Mendatar <-> Menurun).
+                </p>
+
+                <!-- Custom Elegant On-Screen Keyboard -->
+                <div class="bg-slate-50 dark:bg-slate-900/60 p-3 rounded-2xl border border-slate-100 dark:border-slate-800/80">
+                    <div class="grid grid-cols-10 gap-1 mb-1" id="kbd-row1"></div>
+                    <div class="grid grid-cols-9 gap-1 max-w-[90%] mx-auto mb-1" id="kbd-row2"></div>
+                    <div class="flex gap-1 max-w-[95%] mx-auto" id="kbd-row3">
+                        <button onclick="handleKeyInput('BACKSPACE')" class="flex-1 py-3 bg-rose-500 hover:bg-rose-600 text-white rounded-lg text-xs font-bold transition-all shadow-sm">
+                            <i class="fa-solid fa-delete-left text-sm"></i> Hapus
+                        </button>
+                        <div class="flex-[3] grid grid-cols-7 gap-1" id="kbd-letters3"></div>
+                        <button onclick="verifyCrossword()" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-all shadow-sm">
+                            <i class="fa-solid fa-circle-check text-sm"></i> Cek
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Clue Panels -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-1 border-t border-slate-200 dark:border-slate-700/60 pt-4">
+                    <!-- Mendatar -->
+                    <div class="space-y-2.5">
+                        <h3 class="font-bold text-xs uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-arrow-right"></i> Mendatar (Across)
+                        </h3>
+                        <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1" id="clues-across"></div>
+                    </div>
+
+                    <!-- Menurun -->
+                    <div class="space-y-2.5">
+                        <h3 class="font-bold text-xs uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-arrow-down"></i> Menurun (Down)
+                        </h3>
+                        <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1" id="clues-down"></div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- SUCCESS CELEBRATION MODAL -->
+    <div id="celebration-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300 px-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-sm w-full text-center border border-slate-200 dark:border-slate-700 shadow-2xl transform scale-95 transition-all duration-300" id="modal-box">
+            <div class="w-20 h-20 bg-emerald-100 dark:bg-emerald-950/40 rounded-full flex items-center justify-center mx-auto text-4xl mb-4 shadow-inner">
+                🏆
+            </div>
+            <h3 class="text-2xl font-black text-slate-800 dark:text-white mb-2">Hebat! Omedetou!</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">
+                Anda berhasil menyelesaikan seluruh Teka-Teki Silang Dokkai ini dengan sempurna. Pemahaman Anda luar biasa!
+            </p>
+            <button onclick="closeModal()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-xl transition-all shadow-lg shadow-indigo-600/25">
+                Lanjutkan Belajar
+            </button>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-6 mt-12 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400 dark:text-slate-500">
+            <p>&copy; 2026 Aplikasi Nihongo Dokkai & TTS Interaktif. Dibuat untuk Kemudahan Belajar Mandiri.</p>
+        </div>
+    </footer>
+
+    <!-- AUDIO & ENGINE SCRIPTS -->
+    <script>
+        // Audio Engine using Web Audio API (Synthesizer Tones - No External Load Issues)
+        class AudioEngine {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+            }
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+            toggle() {
+                this.enabled = !this.enabled;
+                return this.enabled;
+            }
+            playTone(freq, type, duration, delay = 0) {
+                if (!this.enabled) return;
+                this.init();
+                
+                setTimeout(() => {
+                    try {
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        
+                        osc.type = type;
+                        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                        
+                        gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                        
+                        osc.connect(gain);
+                        gain.connect(this.ctx.destination);
+                        
+                        osc.start();
+                        osc.stop(this.ctx.currentTime + duration);
+                    } catch(e) {
+                        console.error("Audio error:", e);
+                    }
+                }, delay * 1000);
+            }
+            playClick() {
+                this.playTone(600, 'sine', 0.08);
+            }
+            playCorrect() {
+                this.playTone(523.25, 'sine', 0.15); // C5
+                this.playTone(659.25, 'sine', 0.15, 0.08); // E5
+                this.playTone(783.99, 'sine', 0.3, 0.16); // G5
+            }
+            playError() {
+                this.playTone(180, 'triangle', 0.25);
+                this.playTone(150, 'triangle', 0.25, 0.05);
+            }
+            playSuccess() {
+                const notes = [523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 987.77, 1046.50];
+                notes.forEach((freq, idx) => {
+                    this.playTone(freq, 'sine', 0.2, idx * 0.1);
+                });
+            }
+        }
+        
+        const sfx = new AudioEngine();
+
+        // Theme Toggle Handler
+        const themeBtn = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            themeIcon.className = "fa-solid fa-sun text-lg";
+        } else {
+            document.documentElement.classList.remove('dark');
+            themeIcon.className = "fa-solid fa-moon text-lg";
+        }
+
+        themeBtn.addEventListener('click', () => {
+            sfx.playClick();
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                themeIcon.className = "fa-solid fa-moon text-lg";
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                themeIcon.className = "fa-solid fa-sun text-lg";
+                localStorage.setItem('theme', 'dark');
+            }
+            setTimeout(() => drawTTS(), 50); // Redraw canvas on theme toggle
+        });
+
+        // Sound Toggle Handler
+        const soundBtn = document.getElementById('sound-toggle');
+        const soundIcon = document.getElementById('sound-icon');
+        soundBtn.addEventListener('click', () => {
+            const isEnabled = sfx.toggle();
+            if (isEnabled) {
+                soundIcon.className = "fa-solid fa-volume-high text-lg";
+                sfx.playClick();
+            } else {
+                soundIcon.className = "fa-solid fa-volume-xmark text-lg";
+            }
+        });
+
+        // Tab View Switching
+        const tabDokkai = document.getElementById('tab-dokkai');
+        const tabKuis = document.getElementById('tab-kuis');
+        const dokkaiPanel = document.getElementById('dokkai-panel');
+        const quizPanel = document.getElementById('quiz-panel');
+
+        tabDokkai.addEventListener('click', () => {
+            sfx.playClick();
+            tabDokkai.className = "flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 bg-indigo-600 text-white shadow-md shadow-indigo-600/10";
+            tabKuis.className = "flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50";
+            dokkaiPanel.classList.remove('hidden');
+            quizPanel.classList.add('hidden');
+        });
+
+        tabKuis.addEventListener('click', () => {
+            sfx.playClick();
+            tabKuis.className = "flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 bg-indigo-600 text-white shadow-md shadow-indigo-600/10";
+            tabDokkai.className = "flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700/50";
+            quizPanel.classList.remove('hidden');
+            dokkaiPanel.classList.add('hidden');
+        });
+
+        // Accordion Management
+        function toggleAccordion(id) {
+            sfx.playClick();
+            const content = document.getElementById('content-' + id);
+            const arrow = document.getElementById('arrow-' + id);
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                arrow.classList.add('rotate-180');
+            } else {
+                content.classList.add('hidden');
+                arrow.classList.remove('rotate-180');
+            }
+        }
+
+        function toggleTranslation(id) {
+            sfx.playClick();
+            const translation = document.getElementById(id);
+            const label = document.getElementById('label-' + id);
+            
+            if (translation.classList.contains('hidden')) {
+                translation.classList.remove('hidden');
+                label.innerText = "Sembunyikan Terjemahan";
+            } else {
+                translation.classList.add('hidden');
+                label.innerText = "Tampilkan Terjemahan";
+            }
+        }
+    </script>
+
+    <script>
+        // TTS Engine & Settings
+        const COLS = 11;
+        const ROWS = 13;
+        
+        // Raw Crossword letters
+        const gridAnswers = [
+            ["", "", "", "E", "", "", "", "", "", "", ""],
+            ["", "", "", "I", "K", "", "", "Y", "", "", ""],
+            ["M", "A", "N", "G", "A", "", "", "A", "M", "E", ""],
+            ["", "", "", "O", "Z", "", "", "S", "P", "", ""],
+            ["", "", "", "", "E", "", "", "A", "E", "", ""],
+            ["K", "A", "I", "G", "I", "S", "H", "I", "T", "S", "U"],
+            ["A", "", "", "", "", "U", "", "", "T", "", ""],
+            ["R", "", "S", "A", "N", "P", "O", "", "O", "", ""],
+            ["E", "", "", "", "", "O", "", "", "", "", ""],
+            ["N", "", "", "", "", "O", "", "", "", "", ""],
+            ["D", "", "", "", "", "T", "", "", "", "", ""],
+            ["A", "", "", "", "", "S", "", "", "", "", ""],
+            ["R", "", "", "I", "N", "U", "", "", "", "", ""]
+        ];
+
+        // Labeling starting intersections standard crossword numbering
+        const cellLabels = {};
+        cellLabels["0,3"] = "1";
+        cellLabels["1,4"] = "6";
+        cellLabels["1,7"] = "8";
+        cellLabels["2,0"] = "1";
+        cellLabels["2,7"] = "5";
+        cellLabels["3,8"] = "10";
+        cellLabels["5,0"] = "3/2";
+        cellLabels["5,5"] = "4";
+        cellLabels["7,2"] = "7";
+        cellLabels["12,3"] = "9";
+
+        // Word locations with indices
+        const clues = [
+            { id: 'A1', num: 1, dir: 'across', word: 'MANGA', row: 2, col: 0, length: 5, text: 'Media bergambar yang membuat John tertarik belajar bahasa Jepang saat kelas 1 SMP (Dokkai 1)' },
+            { id: 'A3', num: 3, dir: 'across', word: 'KAIGISHITSU', row: 5, col: 0, length: 11, text: 'Ruangan yang dibahas pada Dokkai 2 yang memiliki tiga ukuran berbeda.' },
+            { id: 'A5', num: 5, dir: 'across', word: 'AME', row: 2, col: 7, length: 3, text: 'Banyak orang menganggap ini cuaca buruk, tapi penulis Dokkai 4 justru menyukainya. Apa bahasa Jepangnya "Hujan"?' },
+            { id: 'A7', num: 7, dir: 'across', word: 'SANPO', row: 7, col: 2, length: 5, text: 'Kegiatan jalan-jalan yang sekarang rutin dilakukan istri Pak Hanada setiap hari bersama anjingnya (Dokkai 3)' },
+            { id: 'A9', num: 9, dir: 'across', word: 'INU', row: 12, col: 3, length: 3, text: 'Jenis hewan peliharaan yang dipelihara oleh Pak Hanada sebanyak 2 ekor (Dokkai 3)' },
+            
+            { id: 'D1', num: 1, dir: 'down', word: 'EIGO', row: 0, col: 3, length: 4, text: 'Bahasa yang diajarkan oleh John di sekolahnya Takeshi (Dokkai 1)' },
+            { id: 'D2', num: 2, dir: 'down', word: 'KARENDAR', row: 5, col: 0, length: 8, text: 'Media kertas besar yang ditempel di depan ruang rapat menengah untuk menulis nama saat reservasi (Dokkai 2)' },
+            { id: 'D4', num: 4, dir: 'down', word: 'SUPOOTSU', row: 5, col: 5, length: 8, text: 'Tema komik yang menurut John bisa memberikan energi positif dan semangat, contohnya sepak bola (Dokkai 1)' },
+            { id: 'D6', num: 6, dir: 'down', word: 'KAZE', row: 1, col: 4, length: 4, text: 'Penulis Dokkai 4 merasa cuaca buruk yang sebenarnya adalah saat angin bertiup kencang karena membuat jemuran terbang.' },
+            { id: 'D8', num: 8, dir: 'down', word: 'YASAI', row: 1, col: 7, length: 5, text: 'Komoditas di supermarket yang harganya menjadi sangat murah saat hari hujan, selain buah-buahan (Dokkai 4)' },
+            { id: 'D10', num: 10, dir: 'down', word: 'PETTO', row: 3, col: 8, length: 5, text: 'Istilah umum untuk hewan seperti anjing atau kucing yang kini semakin banyak diperbolehkan tinggal di apartemen (Dokkai 3)' }
+        ];
+
+        // Player entries grid state (restorable)
+        let playerGrid = Array(ROWS).fill(null).map(() => Array(COLS).fill(""));
+        let verifiedGrid = Array(ROWS).fill(null).map(() => Array(COLS).fill(0)); // 0: unverified, 1: correct, 2: incorrect
+
+        // Selection state
+        let selectedRow = 2;
+        let selectedCol = 0;
+        let selectedDir = 'across'; // 'across' or 'down'
+
+        // Setup Canvas and high DPI support
+        const canvas = document.getElementById('tts-canvas');
+        const ctx = canvas.getContext('2d');
+        const BASE_CELL_SIZE = 40;
+
+        function resizeCanvas() {
+            const containerWidth = canvas.parentElement.clientWidth;
+            let targetCellSize = Math.floor((containerWidth - 24) / COLS);
+            targetCellSize = Math.max(26, Math.min(targetCellSize, BASE_CELL_SIZE));
+            
+            const scale = window.devicePixelRatio || 1;
+            canvas.width = (COLS * targetCellSize) * scale;
+            canvas.height = (ROWS * targetCellSize) * scale;
+            
+            canvas.style.width = (COLS * targetCellSize) + 'px';
+            canvas.style.height = (ROWS * targetCellSize) + 'px';
+            
+            ctx.scale(scale, scale);
+            canvas.dataset.cellSize = targetCellSize;
+            
+            drawTTS();
+        }
+
+        function drawTTS() {
+            const cellSize = parseInt(canvas.dataset.cellSize || BASE_CELL_SIZE);
+            const isDark = document.documentElement.classList.contains('dark');
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Background grid fill
+            ctx.fillStyle = isDark ? '#1e293b' : '#cbd5e1';
+            ctx.fillRect(0, 0, COLS * cellSize, ROWS * cellSize);
+
+            // Get active highlight indices based on selected word
+            const activeWordIndices = getActiveWordCoordinates();
+
+            for (let r = 0; r < ROWS; r++) {
+                for (let c = 0; c < COLS; c++) {
+                    const ans = gridAnswers[r][c];
+                    const isCellSelected = (r === selectedRow && c === selectedCol);
+                    const isCellHighlighted = activeWordIndices.some(pos => pos.r === r && pos.c === c);
+
+                    if (ans !== "") {
+                        // Base Cell Style (White / Slate)
+                        if (isCellSelected) {
+                            ctx.fillStyle = isDark ? '#3b82f6' : '#bfdbfe';
+                        } else if (isCellHighlighted) {
+                            ctx.fillStyle = isDark ? '#1e3a8a' : '#dbeafe';
+                        } else {
+                            ctx.fillStyle = isDark ? '#0f172a' : '#ffffff';
+                        }
+                        ctx.fillRect(c * cellSize + 1, r * cellSize + 1, cellSize - 2, cellSize - 2);
+
+                        // Verification States (Borders and Overlay)
+                        if (verifiedGrid[r][c] === 1) { // Correct
+                            ctx.fillStyle = isDark ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)';
+                            ctx.fillRect(c * cellSize + 1, r * cellSize + 1, cellSize - 2, cellSize - 2);
+                        } else if (verifiedGrid[r][c] === 2) { // Incorrect
+                            ctx.fillStyle = isDark ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)';
+                            ctx.fillRect(c * cellSize + 1, r * cellSize + 1, cellSize - 2, cellSize - 2);
+                        }
+
+                        // Outline stroke
+                        ctx.lineWidth = isCellSelected ? 2.5 : 1;
+                        ctx.strokeStyle = isCellSelected 
+                            ? (isDark ? '#60a5fa' : '#2563eb')
+                            : (isDark ? '#334155' : '#94a3b8');
+                        ctx.strokeRect(c * cellSize + 0.5, r * cellSize + 0.5, cellSize - 1, cellSize - 1);
+
+                        // Draw Small Clue Numbers (top-left)
+                        const key = `${r},${c}`;
+                        if (cellLabels[key]) {
+                            ctx.font = '800 9px Inter';
+                            ctx.fillStyle = isDark ? '#94a3b8' : '#475569';
+                            ctx.fillText(cellLabels[key], c * cellSize + 4, r * cellSize + 12);
+                        }
+
+                        // Draw Typed Letters
+                        const val = playerGrid[r][c];
+                        if (val) {
+                            ctx.font = '700 16px Inter';
+                            if (verifiedGrid[r][c] === 1) {
+                                ctx.fillStyle = isDark ? '#34d399' : '#059669';
+                            } else if (verifiedGrid[r][c] === 2) {
+                                ctx.fillStyle = isDark ? '#f87171' : '#dc2626';
+                            } else {
+                                ctx.fillStyle = isDark ? '#f8fafc' : '#1e293b';
+                            }
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillText(val, c * cellSize + (cellSize / 2), r * cellSize + (cellSize / 2) + 2);
+                        }
+                    } else {
+                        // Empty Unplayable Black Box
+                        ctx.fillStyle = isDark ? '#0f172a' : '#1e293b';
+                        ctx.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
+                    }
+                }
+            }
+        }
+
+        // Return coordinates list for active word to render highlight block
+        function getActiveWordCoordinates() {
+            const activeCoords = [];
+            const activeClue = getActiveClue();
+            if (!activeClue) return activeCoords;
+
+            const rStart = activeClue.row;
+            const cStart = activeClue.col;
+            
+            for (let i = 0; i < activeClue.length; i++) {
+                if (activeClue.dir === 'across') {
+                    activeCoords.push({ r: rStart, c: cStart + i });
+                } else {
+                    activeCoords.push({ r: rStart + i, c: cStart });
+                }
+            }
+            return activeCoords;
+        }
+
+        function getActiveClue() {
+            return clues.find(clue => {
+                if (clue.dir === selectedDir) {
+                    if (clue.dir === 'across' && selectedRow === clue.row && selectedCol >= clue.col && selectedCol < clue.col + clue.length) {
+                        return true;
+                    }
+                    if (clue.dir === 'down' && selectedCol === clue.col && selectedRow >= clue.row && selectedRow < clue.row + clue.length) {
+                        return true;
+                    }
+                }
+                return false;
+            }) || clues.find(clue => {
+                // Fallback to select clue in opposite direction on active cell
+                if (clue.dir === 'across' && selectedRow === clue.row && selectedCol >= clue.col && selectedCol < clue.col + clue.length) {
+                    return true;
+                }
+                if (clue.dir === 'down' && selectedCol === clue.col && selectedRow >= clue.row && selectedRow < clue.row + clue.length) {
+                    return true;
+                }
+                return false;
+            });
+        }
+    </script>
+
+    <script>
+        // Canvas Interactive Click Handling
+        canvas.addEventListener('mousedown', handleCanvasClick);
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            handleCanvasClick(touch);
+        });
+
+        function handleCanvasClick(e) {
+            sfx.playClick();
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const cellSize = parseInt(canvas.dataset.cellSize || BASE_CELL_SIZE);
+            const clickedCol = Math.floor(x / cellSize);
+            const clickedRow = Math.floor(y / cellSize);
+            
+            if (clickedRow >= 0 && clickedRow < ROWS && clickedCol >= 0 && clickedCol < COLS) {
+                if (gridAnswers[clickedRow][clickedCol] !== "") {
+                    if (selectedRow === clickedRow && selectedCol === clickedCol) {
+                        // Clicked same cell again: toggle typing orientation
+                        selectedDir = (selectedDir === 'across') ? 'down' : 'across';
+                    } else {
+                        selectedRow = clickedRow;
+                        selectedCol = clickedCol;
+                        
+                        // Pick logical direction based on word structure
+                        const hasAcross = clues.some(clue => clue.dir === 'across' && clickedRow === clue.row && clickedCol >= clue.col && clickedCol < clue.col + clue.length);
+                        const hasDown = clues.some(clue => clue.dir === 'down' && clickedCol === clue.col && clickedRow >= clue.row && clickedRow < clue.row + clue.length);
+                        
+                        if (hasAcross && !hasDown) selectedDir = 'across';
+                        else if (!hasAcross && hasDown) selectedDir = 'down';
+                    }
+                    drawTTS();
+                    updateClueHighlights();
+                }
+            }
+        }
+
+        // Global Keyboard Event Capturing
+        window.addEventListener('keydown', (e) => {
+            // Ignore events if user is typing in quiz form fields
+            if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+                return;
+            }
+            
+            const key = e.key.toUpperCase();
+            if (key === 'ARROWUP') {
+                navigate(-1, 0);
+                e.preventDefault();
+            } else if (key === 'ARROWDOWN') {
+                navigate(1, 0);
+                e.preventDefault();
+            } else if (key === 'ARROWLEFT') {
+                navigate(0, -1);
+                e.preventDefault();
+            } else if (key === 'ARROWRIGHT') {
+                navigate(0, 1);
+                e.preventDefault();
+            } else if (key === 'BACKSPACE') {
+                handleKeyInput('BACKSPACE');
+                e.preventDefault();
+            } else if (/^[A-Z]$/.test(key)) {
+                handleKeyInput(key);
+                e.preventDefault();
+            }
+        });
+
+        function navigate(rowOffset, colOffset) {
+            let nextRow = selectedRow;
+            let nextCol = selectedCol;
+            
+            while (true) {
+                nextRow += rowOffset;
+                nextCol += colOffset;
+                
+                if (nextRow < 0 || nextRow >= ROWS || nextCol < 0 || nextCol >= COLS) return; // Out of bounds
+                if (gridAnswers[nextRow][nextCol] !== "") {
+                    selectedRow = nextRow;
+                    selectedCol = nextCol;
+                    sfx.playClick();
+                    drawTTS();
+                    updateClueHighlights();
+                    return;
+                }
+            }
+        }
+
+        // Primary Character Insertion and Auto-Advance Logic
+        function handleKeyInput(key) {
+            if (gridAnswers[selectedRow][selectedCol] === "") return;
+
+            // Reset verification states for dynamic correction feedback
+            verifiedGrid[selectedRow][selectedCol] = 0;
+
+            if (key === 'BACKSPACE') {
+                playerGrid[selectedRow][selectedCol] = "";
+                moveSelection(-1);
+            } else {
+                playerGrid[selectedRow][selectedCol] = key;
+                sfx.playClick();
+                moveSelection(1);
+            }
+            drawTTS();
+        }
+
+        function moveSelection(offset) {
+            const activeClue = getActiveClue();
+            if (!activeClue) return;
+
+            if (activeClue.dir === 'across') {
+                const nextCol = selectedCol + offset;
+                if (nextCol >= activeClue.col && nextCol < activeClue.col + activeClue.length) {
+                    selectedCol = nextCol;
+                }
+            } else {
+                const nextRow = selectedRow + offset;
+                if (nextRow >= activeClue.row && nextRow < activeClue.row + activeClue.length) {
+                    selectedRow = nextRow;
+                }
+            }
+        }
+    </script>
+
+    <script>
+        // Clue Item Construction & Highlighting
+        function populateClues() {
+            const acrossContainer = document.getElementById('clues-across');
+            const downContainer = document.getElementById('clues-down');
+            
+            acrossContainer.innerHTML = "";
+            downContainer.innerHTML = "";
+            
+            clues.forEach(clue => {
+                const item = document.createElement('div');
+                item.id = `clue-item-${clue.id}`;
+                item.className = "p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/30 text-xs text-slate-600 dark:text-slate-300 hover:border-indigo-400 cursor-pointer transition-all flex gap-2 items-start";
+                item.innerHTML = `
+                    <span class="font-extrabold text-indigo-500 min-w-[20px]">${clue.num}</span>
+                    <span class="leading-normal flex-1">${clue.text}</span>
+                `;
+                
+                item.addEventListener('click', () => {
+                    sfx.playClick();
+                    selectedRow = clue.row;
+                    selectedCol = clue.col;
+                    selectedDir = clue.dir;
+                    drawTTS();
+                    updateClueHighlights();
+                });
+                
+                if (clue.dir === 'across') {
+                    acrossContainer.appendChild(item);
+                } else {
+                    downContainer.appendChild(item);
+                }
+            });
+        }
+
+        function updateClueHighlights() {
+            // Remove previous active clue styles
+            document.querySelectorAll('[id^="clue-item-"]').forEach(el => {
+                el.classList.remove('border-indigo-500', 'bg-indigo-50/50', 'dark:bg-indigo-950/20', 'text-indigo-900', 'dark:text-indigo-200');
+                el.classList.add('border-slate-100', 'dark:border-slate-800', 'bg-slate-50', 'dark:bg-slate-900/30', 'text-slate-600', 'dark:text-slate-300');
+            });
+            
+            const active = getActiveClue();
+            if (active) {
+                const el = document.getElementById(`clue-item-${active.id}`);
+                if (el) {
+                    el.classList.remove('border-slate-100', 'dark:border-slate-800', 'bg-slate-50', 'dark:bg-slate-900/30', 'text-slate-600', 'dark:text-slate-300');
+                    el.classList.add('border-indigo-500', 'bg-indigo-50/50', 'dark:bg-indigo-950/20', 'text-indigo-900', 'dark:text-indigo-200');
+                    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+        }
+
+        // Virtual On-Screen Keyboard Layout Generator
+        function generateVirtualKeyboard() {
+            const r1 = "QWERTYUIOP".split("");
+            const r2 = "ASDFGHJKL".split("");
+            const r3 = "ZXCVBNM".split("");
+            
+            const row1 = document.getElementById('kbd-row1');
+            const row2 = document.getElementById('kbd-row2');
+            const row3 = document.getElementById('kbd-letters3');
+            
+            r1.forEach(l => {
+                row1.innerHTML += `<button onclick="handleKeyInput('${l}')" class="py-2.5 sm:py-3 bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 rounded-lg text-xs font-bold transition-all border border-slate-200 dark:border-slate-700/80 shadow-sm">${l}</button>`;
+            });
+            
+            r2.forEach(l => {
+                row2.innerHTML += `<button onclick="handleKeyInput('${l}')" class="py-2.5 sm:py-3 bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 rounded-lg text-xs font-bold transition-all border border-slate-200 dark:border-slate-700/80 shadow-sm">${l}</button>`;
+            });
+            
+            r3.forEach(l => {
+                row3.innerHTML += `<button onclick="handleKeyInput('${l}')" class="py-2.5 sm:py-3 bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 rounded-lg text-xs font-bold transition-all border border-slate-200 dark:border-slate-700/80 shadow-sm">${l}</button>`;
+            });
+        }
+
+        // Action Buttons: Verify, Reveal Cell, Reset
+        function verifyCrossword() {
+            let allCorrect = true;
+            let missingLetters = false;
+            
+            for (let r = 0; r < ROWS; r++) {
+                for (let c = 0; c < COLS; c++) {
+                    const ans = gridAnswers[r][c];
+                    if (ans !== "") {
+                        const playerVal = playerGrid[r][c].toUpperCase();
+                        if (playerVal === "") {
+                            missingLetters = true;
+                            verifiedGrid[r][c] = 0;
+                        } else if (playerVal === ans) {
+                            verifiedGrid[r][c] = 1; // Correct
+                        } else {
+                            verifiedGrid[r][c] = 2; // Incorrect
+                            allCorrect = false;
+                        }
+                    }
+                }
+            }
+            
+            drawTTS();
+            
+            if (allCorrect && !missingLetters) {
+                sfx.playSuccess();
+                showCelebration();
+            } else if (allCorrect && missingLetters) {
+                sfx.playCorrect();
+            } else {
+                sfx.playError();
+            }
+        }
+
+        function resetCrossword() {
+            sfx.playClick();
+            playerGrid = Array(ROWS).fill(null).map(() => Array(COLS).fill(""));
+            verifiedGrid = Array(ROWS).fill(null).map(() => Array(COLS).fill(0));
+            selectedRow = 2;
+            selectedCol = 0;
+            selectedDir = 'across';
+            drawTTS();
+            updateClueHighlights();
+        }
+
+        function showCelebration() {
+            const modal = document.getElementById('celebration-modal');
+            const box = document.getElementById('modal-box');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            box.classList.remove('scale-95');
+            box.classList.add('scale-100');
+        }
+
+        function closeModal() {
+            sfx.playClick();
+            const modal = document.getElementById('celebration-modal');
+            const box = document.getElementById('modal-box');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            box.classList.remove('scale-100');
+            box.classList.add('scale-95');
+        }
+    </script>
+
+    <script>
+        // Interactive quizzes dataset (3 questions per text)
+        const quizData = [
+            {
+                dokkaiIndex: 1,
+                title: "Dokkai 1 (Email dari John)",
+                questions: [
+                    {
+                        q: "Saran apa yang diberikan John kepada Takeshi yang merasa bahwa belajar bahasa Inggris itu membosankan?",
+                        keywords: ["suka", "disukai", "dimulai dari yang disukai", "hobi"],
+                        ideal: "John menyarankan untuk memulainya dari hal-hal yang disukai terlebih dahulu."
+                    },
+                    {
+                        q: "Mengapa John bisa memahami jalan cerita komik Jepang saat pertama kali membacanya, padahal saat itu ia belum bisa bahasa Jepang?",
+                        keywords: ["gambar", "ada gambar", "melihat gambar"],
+                        ideal: "Karena komik tersebut memiliki gambar (絵/e), sehingga jalan ceritanya bisa dipahami secara garis besar melalui visualisasi tersebut."
+                    },
+                    {
+                        q: "Menurut John, komik seperti apa yang sebaiknya dihindari?",
+                        keywords: ["bully", "rundung", "membully", "いじめる", "menindas"],
+                        ideal: "Komik yang memuat aksi perundungan atau menindas orang lain (いじめる)."
+                    }
+                ]
+            },
+            {
+                dokkaiIndex: 2,
+                title: "Dokkai 2 (Panduan Ruang Rapat)",
+                questions: [
+                    {
+                        q: "Berapa kapasitas maksimal Ruang Rapat Besar (大かいぎ室) dan terletak di lantai berapakah ruangan tersebut?",
+                        keywords: ["100", "seratus", "lantai 5", "5"],
+                        ideal: "Kapasitasnya 100 orang dan terletak di lantai 5."
+                    },
+                    {
+                        q: "Jika memesan Ruang Rapat Menengah (中かいぎ室) untuk bulan Mei, kapan kalender reservasinya mulai ditempel?",
+                        keywords: ["1 maret", "maret", "maret tanggal 1"],
+                        ideal: "Kalender reservasi akan mulai ditempel 2 bulan sebelumnya, yaitu pada tanggal 1 Maret."
+                    },
+                    {
+                        q: "Bagaimana prosedur reservasi untuk Ruang Rapat Kecil (小かいぎ室)?",
+                        keywords: ["kantor", "petugas", "staf", "jimusho", "langsung"],
+                        ideal: "Langsung meminta izin kepada petugas di kantor administrasi (じむしょ). Reservasi sangat fleksibel, bahkan bisa dilakukan pada hari-H."
+                    }
+                ]
+            },
+            {
+                dokkaiIndex: 3,
+                title: "Dokkai 3 (Apartemen Ramah Hewan & Keluarga Hanada)",
+                questions: [
+                    {
+                        q: "Bagaimana perkembangan jumlah apartemen yang memperbolehkan hewan peliharaan dalam 10 tahun terakhir?",
+                        keywords: ["setengah", "meningkat", "lebih dari setengah", "hampir tidak ada", "banyak"],
+                        ideal: "10 tahun lalu hampir tidak ada, namun tahun lalu melonjak hingga melampaui setengah dari total seluruh apartemen yang ada."
+                    },
+                    {
+                        q: "Perubahan positif apa yang dialami istri Pak Hanada setelah tinggal bersama dua anjing?",
+                        keywords: ["sehat", "berjalan-jalan", "jalan-jalan", "sanpo", "kakinya membaik", "kuat"],
+                        ideal: "Fisik tubuhnya menjadi lebih kuat dan sekarang rutin berjalan-jalan keluar rumah (sanpo) setiap hari bersama anjingnya."
+                    },
+                    {
+                        q: "Mengapa dulu penulis teks tidak pernah tertarik untuk memiliki hewan peliharaan sendiri?",
+                        keywords: ["repot", "mengurus", "makan", "toilet", "sakit", "rumah sakit", "sewanya"],
+                        ideal: "Karena merawat hewan peliharaan sangatlah merepotkan, membutuhkan penanganan harian untuk makan, toilet, hingga membawanya ke dokter."
+                    }
+                ]
+            },
+            {
+                dokkaiIndex: 4,
+                title: "Dokkai 4 (Sudut Pandang Cuaca Hujan)",
+                questions: [
+                    {
+                        q: "Sebutkan salah satu alasan mengapa penulis justru menyukai hari hujan!",
+                        keywords: ["hijau", "sepi", "murah", "bersih", "muda", "supermarket"],
+                        ideal: "Warna hijau pohon tampak lebih segar, udara terasa bersih seperti dicuci, bioskop/mall menjadi lebih sepi, atau harga produk supermarket (sayur/buah) menjadi sangat murah."
+                    },
+                    {
+                        q: "Keuntungan apa yang didapatkan penulis di supermarket pada hari hujan?",
+                        keywords: ["murah", "harga turun", "diskon", "sayur", "buah", "lebih murah"],
+                        ideal: "Harga barang-barang di supermarket (terutama sayuran dan buah-buahan) ditawarkan dengan harga yang jauh lebih murah."
+                    },
+                    {
+                        q: "Mengapa penulis menganggap hari berangin kencang jauh lebih buruk daripada hari hujan?",
+                        keywords: ["mata", "debu", "pasir", "baju", "terbang", "jemuran", "kemasukan"],
+                        ideal: "Sebab saat angin kencang mata mudah kemasukan debu, pasir bisa mengotori dalam rumah, dan jemuran pakaian rawan beterbangan tertiup angin."
+                    }
+                ]
+            }
+        ];
+
+        // Building the interactive Quiz Nodes inside DOM
+        function populateQuizzes() {
+            const list = document.getElementById('quiz-list');
+            list.innerHTML = "";
+            
+            quizData.forEach((section, sIdx) => {
+                const sectContainer = document.createElement('div');
+                sectContainer.className = "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 rounded-2xl space-y-4 shadow-sm";
+                
+                sectContainer.innerHTML = `
+                    <div class="flex items-center gap-2 border-b border-slate-100 dark:border-slate-700/60 pb-2.5">
+                        <span class="bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-400 text-[11px] font-black px-2 py-0.5 rounded-full">Teks ${section.dokkaiIndex}</span>
+                        <h4 class="font-extrabold text-sm text-slate-800 dark:text-slate-100">${section.title}</h4>
+                    </div>
+                `;
+                
+                section.questions.forEach((qObj, qIdx) => {
+                    const qId = `q_${sIdx}_${qIdx}`;
+                    const qNode = document.createElement('div');
+                    qNode.className = "space-y-2 text-xs";
+                    qNode.innerHTML = `
+                        <p class="font-semibold text-slate-700 dark:text-slate-300 leading-relaxed">${qIdx + 1}. ${qObj.q}</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="input-${qId}" placeholder="Tulis jawaban Anda..." class="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all dark:text-white">
+                            <button onclick="checkQuizAnswer('${qId}', ${sIdx}, ${qIdx})" class="px-4 bg-slate-100 hover:bg-indigo-600 hover:text-white dark:bg-slate-700/50 dark:hover:bg-indigo-500 rounded-xl font-bold transition-all border border-slate-200 dark:border-slate-600 hover:border-transparent">Cek</button>
+                        </div>
+                        <div id="feedback-${qId}" class="hidden p-3 rounded-xl border leading-relaxed text-[11px] transition-all"></div>
+                    `;
+                    sectContainer.appendChild(qNode);
+                });
+                
+                list.appendChild(sectContainer);
+            });
+        }
+
+        // Quiz Answer Smart Keyword Checking Logic
+        function checkQuizAnswer(qId, sIdx, qIdx) {
+            const userVal = document.getElementById(`input-${qId}`).value.trim().toLowerCase();
+            const feedback = document.getElementById(`feedback-${qId}`);
+            const qObj = quizData[sIdx].questions[qIdx];
+            
+            if (!userVal) {
+                sfx.playError();
+                feedback.className = "p-3 rounded-xl border text-[11px] bg-rose-50 dark:bg-rose-950/20 text-rose-800 dark:text-rose-300 border-rose-200/50 dark:border-rose-900/30";
+                feedback.innerHTML = "⚠️ Silakan isi kolom jawaban terlebih dahulu.";
+                feedback.classList.remove('hidden');
+                return;
+            }
+
+            // Keyword analysis to evaluate matching
+            const matchedKeywords = qObj.keywords.filter(keyword => userVal.includes(keyword));
+            const isPartiallyCorrect = matchedKeywords.length > 0;
+
+            feedback.classList.remove('hidden');
+            
+            if (isPartiallyCorrect) {
+                sfx.playCorrect();
+                feedback.className = "p-3.5 rounded-xl border text-[11px] bg-emerald-50 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300 border-emerald-200/50 dark:border-emerald-900/40 space-y-1";
+                feedback.innerHTML = `
+                    <div class="flex items-center gap-1.5 font-bold"><i class="fa-solid fa-circle-check"></i> Jawaban Anda Sangat Bagus!</div>
+                    <p class="text-slate-500 dark:text-slate-400 font-normal mt-1 leading-relaxed"><strong class="text-emerald-700 dark:text-emerald-400">Jawaban Ideal:</strong> ${qObj.ideal}</p>
+                `;
+            } else {
+                sfx.playError();
+                feedback.className = "p-3.5 rounded-xl border text-[11px] bg-amber-50 dark:bg-amber-950/20 text-amber-800 dark:text-amber-300 border-amber-200/50 dark:border-amber-900/40 space-y-1";
+                feedback.innerHTML = `
+                    <div class="flex items-center gap-1.5 font-bold"><i class="fa-solid fa-circle-question"></i> Kurang Tepat, Silakan Bandingkan Jawaban Anda</div>
+                    <p class="text-slate-500 dark:text-slate-400 font-normal mt-1 leading-relaxed"><strong class="text-amber-700 dark:text-amber-400">Jawaban Ideal:</strong> ${qObj.ideal}</p>
+                `;
+            }
+        }
+    </script>
+
+    <script>
+        // Orchestrated System Initialization
+        window.onload = function() {
+            // Load and build UI
+            generateVirtualKeyboard();
+            populateClues();
+            populateQuizzes();
+            
+            // Adjust canvas sizing and render
+            resizeCanvas();
+            updateClueHighlights();
+            
+            window.addEventListener('resize', resizeCanvas);
+        };
+    </script>
+</body>
+</html>
